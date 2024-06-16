@@ -26,7 +26,7 @@ void printBoard(char** board, int height, int width) {
     }
     printf("-\n");
     for (int j = 0; j < width; ++j) {
-        printf(" %d", j);
+        printf(" %d", j+1);
     }
     printf("\n");
 }
@@ -53,7 +53,7 @@ int checkWin(char** board, int height, int width, int row, int column, char play
         int count = 0;
         for (int j = 0; j < width; j++) {
             if (board[row][j] == player) {
-                if (count++ == 4)
+                if (count++ == 3)
                 {
                 return 1;
                 }
@@ -65,7 +65,7 @@ int checkWin(char** board, int height, int width, int row, int column, char play
         count = 0;
         for (int i = 0; i < height; i++) {
             if (board[i][column] == player) {
-                if (count++ == 4){
+                if (count++ == 3){
                 return 1;
                 }
             } else {
@@ -178,17 +178,18 @@ void playGame(int height, int width, char* filename, int singlePlayer) {
         }
         fprintf(file, "-\n");
         for (int j = 0; j < width; ++j) {
-            fprintf(file, " %d", j);
+            fprintf(file, " %d", j + 1);
         }
         fprintf(file, "\n");
 
         int column;
         if (singlePlayer && currentPlayer == 1) {
             column = getComputerMove(board, width);
-            printf("Компютърът избра колона %d\n", column);
+            printf("Компютърът избра колона %d\n", column + 1);
         } else {
             printf("Играч %d (%c), изберете колона: ", currentPlayer + 1, players[currentPlayer]);
             scanf("%d", &column);
+            column--;
         }
 
 
