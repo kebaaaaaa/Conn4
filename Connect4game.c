@@ -191,8 +191,6 @@ void playGame(int height, int width, char* filename, int singlePlayer) {
             scanf("%d", &column);
         }
 
-        printf("Играч %d (%c), изберете колона: ", currentPlayer + 1, players[currentPlayer]);
-        scanf("%d", &column);
 
         if (!isValidMove(board, column, width)) {
             printf("Невалиден ход. Опитайте отново.\n");
