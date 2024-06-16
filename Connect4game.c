@@ -31,6 +31,24 @@ void printBoard(char** board, int height, int width) {
     printf("\n");
 }
 
+void writeBoardToFile(FILE* file, char** board, int height, int width) {
+    fprintf(file, "Игрално поле:\n");
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            fprintf(file, "|%c", board[i][j]);
+        }
+        fprintf(file, "|\n");
+    }
+    for (int j = 0; j < width; ++j) {
+        fprintf(file, "--");
+    }
+    fprintf(file, "-\n");
+    for (int j = 0; j < width; ++j) {
+        fprintf(file, " %d", j + 1);
+    }
+    fprintf(file, "\n");
+}
+
 int isValidMove(char** board, int column, int width) {
     if (column < 0 || column >= width) {
         return 0;
@@ -166,21 +184,7 @@ void playGame(int height, int width, char* filename, int singlePlayer) {
 
     while (1) {
         printBoard(board, height, width);
-        fprintf(file, "Игрално поле:\n");
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                fprintf(file, "|%c", board[i][j]);
-            }
-            fprintf(file, "|\n");
-        }
-        for (int j = 0; j < width; ++j) {
-            fprintf(file, "--");
-        }
-        fprintf(file, "-\n");
-        for (int j = 0; j < width; ++j) {
-            fprintf(file, " %d", j + 1);
-        }
-        fprintf(file, "\n");
+        writeBoardToFile(file, board, height, width);
 
         int column;
         if (singlePlayer && currentPlayer == 1) {
@@ -203,6 +207,7 @@ void playGame(int height, int width, char* filename, int singlePlayer) {
 
         if (checkWin(board, height, width, row, column, players[currentPlayer])) {
             printBoard(board, height, width);
+            writeBoardToFile(file, board, height, width);
             fprintf(file, "Играч %d (%c) печели!\n", currentPlayer + 1, players[currentPlayer]);
             printf("Играч %d (%c) печели!\n", currentPlayer + 1, players[currentPlayer]);
             break;
@@ -210,6 +215,7 @@ void playGame(int height, int width, char* filename, int singlePlayer) {
 
         if (totalMoves == maxMoves) {
             printBoard(board, height, width);
+            writeBoardToFile(file, board, height, width);
             fprintf(file, "Играта е равна!\n");
             printf("Играта е равна!\n");
             break;
