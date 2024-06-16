@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define EMPTY ' '
 #define PLAYER1 'X'
 #define PLAYER2 'O'
 
-void suzdavanePole(char** board, int height, int width) {
+void initializeBoard(char** board, int height, int width) {
     for (int i = 0; i < height; ++i) {
         for (int j = 0; j < width; ++j) {
             board[i][j] = EMPTY;
@@ -13,7 +14,7 @@ void suzdavanePole(char** board, int height, int width) {
     }
 }
 
-void printPole(char** board, int height, int width) {
+void printBoard(char** board, int height, int width) {
     for (int i = 0; i < height; ++i) {
         for (int j = 0; j < width; ++j) {
             printf("|%c", board[i][j]);
@@ -30,14 +31,14 @@ void printPole(char** board, int height, int width) {
     printf("\n");
 }
 
-int PoverkaHod(char** board, int column, int width) {
+int isValidMove(char** board, int column, int width) {
     if (column < 0 || column >= width) {
         return 0;
     }
     return board[0][column] == EMPTY;
 }
 
-int IzpulnenieHod(char** board, int height, int column, char player) {
+int makeMove(char** board, int height, int column, char player) {
     for (int i = height - 1; i >= 0; --i) {
         if (board[i][column] == EMPTY) {
             board[i][column] = player;
@@ -73,7 +74,7 @@ int checkWin(char** board, int height, int width, int row, int column, char play
         }
 
     //diagonalno
-        int start_row, start_col, count;
+        int start_row, start_col;
 
 
         if (row < column) {
@@ -95,7 +96,7 @@ int checkWin(char** board, int height, int width, int row, int column, char play
             }
             start_row++;
             start_col++;
-}
+        }
 
             
             count = 0;
@@ -126,7 +127,26 @@ int checkWin(char** board, int height, int width, int row, int column, char play
     return 0;
 }
 
-void playGame(int height, int width, char* filename) {
+int getComputerMove(char** board, int width) {
+    int validColumns[width];
+    int count = 0;
+
+    for (int col = 0; col < width; ++col) {
+        if (isValidMove(board, col, width)) {
+            validColumns[count++] = col;
+        }
+    }
+
+    if (count == 0) {
+        return -1; 
+    }
+
+
+    int randomIndex = rand() % count;
+    return validColumns[randomIndex];
+}
+
+void playGame(int height, int width, char* filename, int singlePlayer) {
     FILE* file = fopen(filename, "w");
     if (!file) {
         printf("Не може да се отвори файла за запис.\n");
@@ -163,6 +183,14 @@ void playGame(int height, int width, char* filename) {
         fprintf(file, "\n");
 
         int column;
+        if (singlePlayer && currentPlayer == 1) {
+            column = getComputerMove(board, width);
+            printf("Компютърът избра колона %d\n", column);
+        } else {
+            printf("Играч %d (%c), изберете колона: ", currentPlayer + 1, players[currentPlayer]);
+            scanf("%d", &column);
+        }
+
         printf("Играч %d (%c), изберете колона: ", currentPlayer + 1, players[currentPlayer]);
         scanf("%d", &column);
 
@@ -196,4 +224,33 @@ void playGame(int height, int width, char* filename) {
         free(board[i]);
     }
     free(board);
+}
+
+int main() {
+    int height, width;
+    char filename[100];
+    int singlePlayer;
+
+    printf("Въведете височина на игралното поле (4-20): ");
+    scanf("%d", &height);
+    printf("Въведете ширина на игралното поле (4-40): ");
+    scanf("%d", &width);
+
+    if (height < 4 || height > 20 || width < 4 || width > 40) {
+        printf("Невалидни размери на игралното поле.\n");
+        return 1;
+    }
+
+    printf("Въведете име на файл за запис на резултатите: ");
+    scanf("%s", filename);
+
+    printf("Изберете режим на игра (0 за двама играчи, 1 за един играч срещу компютъра): ");
+    scanf("%d", &singlePlayer);
+
+
+    srand(time(NULL));
+
+    playGame(height, width, filename, singlePlayer);
+
+    return 0;
 }
